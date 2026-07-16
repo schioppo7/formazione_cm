@@ -1,0 +1,7 @@
+---
+container_engine_force: "auto"
+
+
+registry_name: "local-registry"
+registry_image: "registry:2"
+registry_port: "5000"

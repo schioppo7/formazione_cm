@@ -1,0 +1,52 @@
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+
+# Vagrant and virtualization
+.vagrant/
+*.log
+
+# Database backups
+backups/
+*.sql
+*.dump
+*.backup
+
+# Secrets and local variables
+vault_password.txt
+.vault_pass
+vault-password*
+*.password
+*.secret
+.env
+.env.*
+
+# Kubernetes credentials
+.kube/
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+
+# SSH keys and certificates
+id_rsa
+id_rsa_*
+id_ed25519
+id_ed25519_*
+*.pem
+*.key
+*.pub
+*.p12
+*.pfx
+private_key
+**/private_key
+
+# Generated exercise keys
+id_key_genericuser
+id_key_genericuser.pub
+
+# Temporary Ansible and Python files
+*.retry
+__pycache__/
+*.pyc

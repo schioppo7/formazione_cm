@@ -1,0 +1,19 @@
+Vagrant.configure("2") do |config|
+    config.vm.box = "generic/alpine319"
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = "512"
+        vb.cpus = 1
+    end
+
+
+    config.vm.define "db-source" do |source|
+        source.vm.hostname = "db-source"
+        source.vm.network "private_network", ip: "192.168.56.10"
+    end
+
+
+    config.vm.define "db-target" do |target|
+        target.vm.hostname = "db-target"
+        target.vm.network "private_network", ip: "192.168.56.11"
+    end
+end

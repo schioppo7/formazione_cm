@@ -1,0 +1,61 @@
+---
+- name: Create the build directories
+  ansible.builtin.file:
+    path: "{{ item.context_path }}"
+    state: directory
+  loop: "{{ containers_config }}"
+
+- name: Generate the SSH key pair for the lab
+  ansible.builtin.command:
+    cmd: >-
+      ssh-keygen -t ed25519 -C "genericuser@example.com"
+      -f "{{ playbook_dir }}/id_key_genericuser" -N ""
+    creates: "{{ playbook_dir }}/id_key_genericuser"
+
+- name: Copy the public key into each build directory
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/id_key_genericuser.pub"
+    dest: "{{ item.context_path }}/id_key_genericuser.pub"
+    mode: "0644"
+  loop: "{{ containers_config }}"
+
+- name: Create each container Dockerfile
+  ansible.builtin.copy:
+    dest: "{{ item.context_path }}/Dockerfile"
+    mode: "0644"
+    content: |
+      FROM {{ 'ubuntu:latest' if 'ubuntu' in item.name else 'debian:latest' }}
+
+      ARG DEBIAN_FRONTEND=noninteractive
+
+      RUN apt-get update \
+          && apt-get install -y openssh-server sudo \
+          && rm -rf /var/lib/apt/lists/*
+
+      RUN useradd -m -s /bin/bash -G sudo genericuser \
+          && echo "genericuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+      RUN mkdir -p /var/run/sshd /home/genericuser/.ssh \
+          && chmod 700 /home/genericuser/.ssh \
+          && sed -ri 's/^#?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config \
+          && sed -ri 's/^#?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config \
+          && echo 'AllowUsers genericuser' >> /etc/ssh/sshd_config
+
+      COPY id_key_genericuser.pub /home/genericuser/.ssh/authorized_keys
+      RUN chown -R genericuser:genericuser /home/genericuser/.ssh \
+          && chmod 600 /home/genericuser/.ssh/authorized_keys
+
+      EXPOSE 22
+
+      CMD ["/usr/sbin/sshd", "-D"]
+  loop: "{{ containers_config }}"
+
+- name: Build the images
+  ansible.builtin.command: >
+    {{ container_executable }} build -t {{ registry_host }}/{{ item.name }}:latest {{ item.context_path }}
+  loop: "{{ containers_config }}"
+
+- name: Push the images to the local registry
+  ansible.builtin.command: >
+    {{ container_executable }} push --tls-verify=false {{ registry_host }}/{{ item.name }}:latest
+  loop: "{{ containers_config }}"

@@ -1,0 +1,3 @@
+---
+# defaults file for roles/container_deploy
+container_deploy_defaults_loaded: true

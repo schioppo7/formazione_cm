@@ -1,0 +1,21 @@
+---
+- name: "Registry, Build e Deploy containers"
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    registry_host: "localhost:5000"
+    containers_config:
+      - name: "ssh-ubuntu"
+        context_path: "./ubuntu_build_dir"
+        external_port: "2224"
+        internal_port: "22"
+      - name: "ssh-debian"
+        context_path: "./debian_build_dir"
+        external_port: "2223"
+        internal_port: "22"
+
+  roles:
+    - container_registry
+    - container_build
+    - container_deploy
