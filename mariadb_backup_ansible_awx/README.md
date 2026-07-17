@@ -227,7 +227,6 @@ Vagrant viene utilizzato per il provisioning dell’ambiente, mentre Ansible ges
 * backup;
 * trasferimento;
 * restore;
-* verifica;
 * gestione sicura delle credenziali.
 
 Il backup utilizzato è un dump logico completo del database `testdb`, realizzato tramite `mariadb-dump`.
