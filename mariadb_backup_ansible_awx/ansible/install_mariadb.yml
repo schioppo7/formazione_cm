@@ -4,21 +4,14 @@
   become: true
 
   tasks:
-    - name: Installa MariaDB con client
-      ansible.builtin.package:
-        name:
-          - mariadb-client
-          - mariadb
-        state: present
-    
-    - name: Inizializza MariaDB
-      ansible.builtin.command:
-        cmd: mariadb-install-db --user=mysql --datadir=/var/lib/mysql
-        creates: /var/lib/mysql/mysql
-      
-
-    - name: Avvia MariaDB
-      ansible.builtin.service:
-        name: mariadb
-        state: started
-        enabled: true
+    - name: Installa MariaDB e MariaDB client su Alpine
+      ansible.builtin.shell: |
+        if apk info -e mariadb >/dev/null 2>&1 &&
+           apk info -e mariadb-client >/dev/null 2>&1; then
+          echo "ALREADY_PRESENT"
+        else
+          apk add --no-cache mariadb mariadb-client
+          echo "PACKAGES_ADDED"
+        fi
+      register: mariadb_install
+      changed_when: "'PACKAGES_ADDED' in mariadb_install.stdout"
