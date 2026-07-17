@@ -5,12 +5,11 @@
 
   tasks:
     - name: Installa MariaDB con client
-      ansible.builtin.apk:
+      ansible.builtin.package:
         name:
           - mariadb-client
           - mariadb
         state: present
-        update_cache: true
     
     - name: Inizializza MariaDB
       ansible.builtin.command:
