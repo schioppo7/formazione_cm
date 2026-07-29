@@ -1,0 +1,20 @@
+---
+- name: Run a local container registry with Podman
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Download the official Registry image
+      containers.podman.podman_image:
+        name: docker.io/library/registry
+        tag: "2"
+        state: present
+    
+    - name: Start the Registry container
+      containers.podman.podman_container:
+        name: local-registry
+        image: docker.io/library/registry:2
+        state: started
+        ports:
+          - "5000:5000"

@@ -1,0 +1,22 @@
+FROM docker.io/library/debian:12-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y openssh-server sudo && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -rm -d /home/genericuser -s /bin/bash -g root -G sudo -u 1001 genericuser && \
+    echo "genericuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN mkdir /var/run/sshd && \
+    sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && \
+    sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
+    echo 'AllowUsers genericuser' >> /etc/ssh/sshd_config
+
+RUN mkdir -p /home/genericuser/.ssh && chmod 700 /home/genericuser/.ssh
+COPY id_key_genericuser.pub /home/genericuser/.ssh/authorized_keys
+RUN chown -R genericuser:root /home/genericuser/.ssh && chmod 600 /home/genericuser/.ssh/authorized_keys
+
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]

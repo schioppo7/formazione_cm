@@ -1,0 +1,11 @@
+---
+- name: Fetch the database backup
+  hosts: source
+  become: true
+
+  tasks:
+    - name: Copy the backup to the controller
+      ansible.builtin.fetch:
+        src: /tmp/testdb_backup.sql
+        dest: "{{ playbook_dir }}/../backups/testdb_backup.sql"
+        flat: true

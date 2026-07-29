@@ -1,0 +1,16 @@
+---
+- name: Restore the database
+  hosts: target
+  become: true
+
+  vars_files:
+    - vault.yml
+
+  tasks:
+    - name: Create testdb
+      ansible.builtin.shell: |
+        mariadb -u "{{ db_user }}" -e "CREATE DATABASE IF NOT EXISTS {{ db_name }};"
+
+    - name: Restore the backup
+      ansible.builtin.shell: |
+        mariadb -u "{{ db_user }}" "{{ db_name }}" < /tmp/testdb_backup.sql

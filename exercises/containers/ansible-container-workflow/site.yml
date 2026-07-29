@@ -1,0 +1,21 @@
+---
+- name: "Manage the registry, build images and deploy containers"
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    registry_host: "localhost:5000"
+    containers_config:
+      - name: "ssh-ubuntu"
+        context_path: "./build-contexts/ubuntu"
+        external_port: "2224"
+        internal_port: "22"
+      - name: "ssh-debian"
+        context_path: "./build-contexts/debian"
+        external_port: "2223"
+        internal_port: "22"
+
+  roles:
+    - container_registry
+    - container_build
+    - container_deploy

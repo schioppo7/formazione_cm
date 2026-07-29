@@ -1,0 +1,11 @@
+---
+galaxy_info:
+  author: Training project
+  description: Start the lab containers
+  license: MIT
+  min_ansible_version: "2.14"
+  galaxy_tags:
+    - containers
+    - deployment
+
+dependencies: []

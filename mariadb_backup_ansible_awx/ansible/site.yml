@@ -1,8 +1,0 @@
----
-- import_playbook: install_mariadb.yml
-- import_playbook: database.yaml
-- import_playbook: backup_database.yaml
-- import_playbook: fetch_backup.yml
-- import_playbook: copy_backup.yaml
-- import_playbook: restore_database.yml
-

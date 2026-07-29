@@ -1,0 +1,29 @@
+---
+- name: Build SSH container images for different operating systems
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Generate the SSH key pair
+      ansible.builtin.command:
+        cmd: ssh-keygen -t rsa -b 4096 -C "genericuser@example.com" -f ./id_key_genericuser -N ""
+        creates: ./id_key_genericuser
+
+    - name: Build the Ubuntu image with Podman
+      containers.podman.podman_image:
+        name: localhost/ssh-ubuntu
+        tag: latest
+        path: .
+        state: build
+        build:
+          file: dockerfiles/ubuntu/Dockerfile
+
+    - name: Build the Debian image with Podman
+      containers.podman.podman_image:
+        name: localhost/ssh-debian
+        tag: latest
+        path: .
+        state: build
+        build:
+          file: dockerfiles/debian/Dockerfile

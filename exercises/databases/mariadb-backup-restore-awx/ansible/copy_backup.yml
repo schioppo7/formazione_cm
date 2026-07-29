@@ -1,0 +1,10 @@
+---
+- name: Copy the backup to the target
+  hosts: target
+  become: true
+
+  tasks:
+    - name: Copy the SQL backup
+      ansible.builtin.copy:
+        src: ../backups/testdb_backup.sql
+        dest: /tmp/testdb_backup.sql

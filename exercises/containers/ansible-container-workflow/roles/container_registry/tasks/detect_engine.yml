@@ -1,0 +1,25 @@
+---
+- name: Check whether Docker is installed
+  ansible.builtin.command: docker --version
+  register: docker_check
+  failed_when: false
+  changed_when: false
+
+- name: Check whether Podman is installed
+  ansible.builtin.command: podman --version
+  register: podman_check
+  failed_when: false
+  changed_when: false
+
+- name: Set container engine availability facts
+  ansible.builtin.set_fact:
+    docker_available: "{{ docker_check.rc == 0 }}"
+    podman_available: "{{ podman_check.rc == 0 }}"
+
+- name: Select the container engine
+  ansible.builtin.set_fact:
+    container_executable: "{{ 'podman' if (podman_available and container_engine_force == 'auto') or container_engine_force == 'podman' else 'docker' }}"
+
+- name: Show the selected container engine
+  ansible.builtin.debug:
+    msg: "Selected container engine: {{ container_executable }}"

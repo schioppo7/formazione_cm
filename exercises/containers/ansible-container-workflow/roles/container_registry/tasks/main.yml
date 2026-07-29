@@ -1,0 +1,11 @@
+---
+# tasks file for roles/container_registry
+
+- name: Detect the container engine
+  ansible.builtin.include_tasks: detect_engine.yml
+
+- name: Check the available containers
+  ansible.builtin.command: "{{ container_executable }} ps -a --format name"
+  register: registry_check
+  changed_when: false
+  failed_when: false

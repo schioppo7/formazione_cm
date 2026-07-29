@@ -1,0 +1,9 @@
+---
+- name: Back up the database
+  hosts: source
+  become: true
+
+  tasks:
+    - name: Dump the testdb database
+      ansible.builtin.shell: |
+        mariadb-dump testdb > /tmp/testdb_backup.sql
